@@ -26,11 +26,20 @@ def generar_reporte(participantes):
         
         # EXCEPCIONES: Bloque robusto de control requerido
         try:
-            # Simulacion  correo
+            # 1. VALIDACIÓN DE EDAD (Debe ser mayor de edad)
+            if "edad" not in persona:
+                raise ValueError("Falta el campo de edad en el registro.")
+            
+            # Convertimos a entero por seguridad si viene como string
+            edad_usuario = int(persona["edad"]) 
+            if edad_usuario < 18:
+                raise ValueError(f"El participante es menor de edad ({edad_usuario} años). Registro no permitido.")
+
+            # 2. VALIDACIÓN DE CORREO
             if "@" not in persona["correo"]:
                 raise ValueError("El formato del correo electrónico es inválido.")
                 
-            # 2. MÉTODOS DE STRINGS: 
+            # 3. MÉTODOS DE STRINGS: 
             # Uso de split() y len() para verificar el nombre completo
             palabras_nombre = persona["nombre"].split()
             if len(palabras_nombre) < 1:
@@ -44,12 +53,13 @@ def generar_reporte(participantes):
             # Imprimir la estructura visual exacta solicitada (Índice inicia en 1)
             print(f"{indice + 1}.")
             print(f"Nombre: {nombre_formateado}")
+            print(f"Edad: {edad_usuario} años")  # <- Añadido al reporte visual
             print(f"Empresa: {empresa_formateada}")
             print(f"Correo: {correo_formateado}")
             print("---------------------")
 
         except ValueError as error_validacion:
-            # Captura específica de errores de valor
+            # Captura específica de errores de valor (incluyendo si no es mayor de edad)
             print(f"❌ Error en registro #{indice + 1}: {error_validacion}")
             
         finally:
@@ -60,7 +70,7 @@ def generar_reporte(participantes):
     total_registrados = len(lista_ordenada)
     
     print("============================")
-    print(f"Total registrados: {total_registrados}")
+    print(f"Total registrados en lista: {total_registrados}")
     print("============================")
 
 def eliminar_participante_por_nombre(participantes, nombre_buscar):
